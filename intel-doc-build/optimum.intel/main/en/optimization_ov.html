@@ -1,0 +1,245 @@
+<meta charset="utf-8" /><meta http-equiv="content-security-policy" content=""><meta name="hf:doc:metadata" content="{&quot;local&quot;:&quot;optimization&quot;,&quot;sections&quot;:[{&quot;local&quot;:&quot;posttraining-optimization&quot;,&quot;title&quot;:&quot;Post-training optimization&quot;},{&quot;local&quot;:&quot;trainingtime-optimization&quot;,&quot;sections&quot;:[{&quot;local&quot;:&quot;quantizationaware-training-qat&quot;,&quot;title&quot;:&quot;Quantization-Aware Training (QAT) &quot;},{&quot;local&quot;:&quot;joint-pruning-quantization-and-distillation-jpqd&quot;,&quot;title&quot;:&quot;Joint Pruning, Quantization and Distillation (JPQD)&quot;}],&quot;title&quot;:&quot;Training-time optimization&quot;},{&quot;local&quot;:&quot;inference-with-transformers-pipeline&quot;,&quot;title&quot;:&quot;Inference with Transformers pipeline&quot;}],&quot;title&quot;:&quot;Optimization&quot;}" data-svelte="svelte-1phssyn">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/assets/pages/__layout.svelte-hf-doc-builder.css">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/start-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/vendor-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/paths-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/pages/__layout.svelte-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/pages/optimization_ov.mdx-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/IconCopyLink-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/CodeBlock-hf-doc-builder.js"> 
+
+
+
+
+
+
+<h1 class="relative group"><a id="optimization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#optimization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Optimization
+	</span></h1>
+
+<p>🤗 Optimum Intel provides an <code>openvino</code> package that enables you to apply a variety of model compression methods such as quantization, pruning, on many models hosted on the 🤗 hub using the <a href="https://docs.openvino.ai/2022.1/docs_nncf_introduction.html" rel="nofollow">NNCF</a> framework.</p>
+<h2 class="relative group"><a id="posttraining-optimization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#posttraining-optimization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Post-training optimization
+	</span></h2>
+
+<p>Post-training static quantization introduces an additional calibration step where data is fed through the network in order to compute the activations quantization parameters.
+Here is how to apply static quantization on a fine-tuned DistilBERT:</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> partial
+<span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForSequenceClassification, AutoTokenizer
+<span class="hljs-keyword">from</span> optimum.intel <span class="hljs-keyword">import</span> OVConfig, OVQuantizer
+
+model_id = <span class="hljs-string">&quot;distilbert-base-uncased-finetuned-sst-2-english&quot;</span>
+model = AutoModelForSequenceClassification.from_pretrained(model_id)
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+<span class="hljs-comment"># The directory where the quantized model will be saved</span>
+save_dir = <span class="hljs-string">&quot;ptq_model&quot;</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">preprocess_function</span>(<span class="hljs-params">examples, tokenizer</span>):
+    <span class="hljs-keyword">return</span> tokenizer(examples[<span class="hljs-string">&quot;sentence&quot;</span>], padding=<span class="hljs-string">&quot;max_length&quot;</span>, max_length=<span class="hljs-number">128</span>, truncation=<span class="hljs-literal">True</span>)
+
+<span class="hljs-comment"># Load the default quantization configuration detailing the quantization we wish to apply</span>
+quantization_config = OVConfig()
+<span class="hljs-comment"># Instantiate our OVQuantizer using the desired configuration</span>
+quantizer = OVQuantizer.from_pretrained(model)
+<span class="hljs-comment"># Create the calibration dataset used to perform static quantization</span>
+calibration_dataset = quantizer.get_calibration_dataset(
+    <span class="hljs-string">&quot;glue&quot;</span>,
+    dataset_config_name=<span class="hljs-string">&quot;sst2&quot;</span>,
+    preprocess_function=partial(preprocess_function, tokenizer=tokenizer),
+    num_samples=<span class="hljs-number">300</span>,
+    dataset_split=<span class="hljs-string">&quot;train&quot;</span>,
+)
+<span class="hljs-comment"># Apply static quantization and export the resulting quantized model to OpenVINO IR format</span>
+quantizer.quantize(
+    quantization_config=quantization_config,
+    calibration_dataset=calibration_dataset,
+    save_directory=save_dir,
+)
+<span class="hljs-comment"># Save the tokenizer</span>
+tokenizer.save_pretrained(save_dir)<!-- HTML_TAG_END --></pre></div>
+<p>The <code>quantize()</code> method applies post-training static quantization and export the resulting quantized model to the OpenVINO Intermediate Representation (IR). The resulting graph is represented with two files: an XML file describing the network topology and a binary file describing the weights. The resulting model can be run on any target Intel device.</p>
+<h2 class="relative group"><a id="trainingtime-optimization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#trainingtime-optimization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Training-time optimization
+	</span></h2>
+
+<p>Apart from optimizing a model after training like post-training quantization above, <code>optimum.openvino</code> also provides optimization methods during training, namely Quantization-Aware Training (QAT) and Joint Pruning, Quantization and Distillation (JPQD).</p>
+<h3 class="relative group"><a id="quantizationaware-training-qat" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#quantizationaware-training-qat"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Quantization-Aware Training (QAT) 
+	</span></h3>
+
+<p>QAT simulates the effects of quantization during training, in order to alleviate its effects on the model’s accuracy. It is recommended in the case where post-training quantization results in high accuracy degradation. Here is an example on how to fine-tune a DistilBERT on the sst-2 task while applying quantization aware training (QAT).</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START -->import evaluate
+import numpy as np
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    TrainingArguments,
+    default_data_collator,
+)
+from datasets import load_dataset
+<span class="hljs-deletion">- from transformers import Trainer</span>
+<span class="hljs-addition">+ from optimum.intel import OVConfig, OVTrainer, OVModelForSequenceClassification</span>
+
+model_id = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+model = AutoModelForSequenceClassification.from_pretrained(model_id)
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+# The directory where the quantized model will be saved
+save_dir = &quot;qat_model&quot;
+dataset = load_dataset(&quot;glue&quot;, &quot;sst2&quot;)
+dataset = dataset.map(
+    lambda examples: tokenizer(examples[&quot;sentence&quot;], padding=True), batched=True
+)
+metric = evaluate.load(&quot;glue&quot;, &quot;sst2&quot;)
+
+def compute_metrics(eval_preds):
+    preds = np.argmax(eval_preds.predictions, axis=1)
+    return metric.compute(predictions=preds, references=eval_preds.label_ids)
+
+# Load the default quantization configuration detailing the quantization we wish to apply
+<span class="hljs-addition">+ ov_config = OVConfig()</span>
+
+<span class="hljs-deletion">- trainer = Trainer(</span>
+<span class="hljs-addition">+ trainer = OVTrainer(</span>
+    model=model,
+    args=TrainingArguments(save_dir, num_train_epochs=1.0, do_train=True, do_eval=True),
+    train_dataset=dataset[&quot;train&quot;].select(range(300)),
+    eval_dataset=dataset[&quot;validation&quot;],
+    compute_metrics=compute_metrics,
+    tokenizer=tokenizer,
+    data_collator=default_data_collator,
+<span class="hljs-addition">+   ov_config=ov_config,</span>
+<span class="hljs-addition">+   task=&quot;text-classification&quot;,</span>
+)
+
+# Train the model while applying quantization
+train_result = trainer.train()
+metrics = trainer.evaluate()
+# Export the quantized model to OpenVINO IR format and save it
+trainer.save_model()
+
+# Load the resulting quantized model
+<span class="hljs-deletion">- model = AutoModelForSequenceClassification.from_pretrained(save_dir)</span>
+<span class="hljs-addition">+ model = OVModelForSequenceClassification.from_pretrained(save_dir)</span><!-- HTML_TAG_END --></pre></div>
+<h3 class="relative group"><a id="joint-pruning-quantization-and-distillation-jpqd" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#joint-pruning-quantization-and-distillation-jpqd"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Joint Pruning, Quantization and Distillation (JPQD)
+	</span></h3>
+
+<p>Other than quantization, compression methods like pruning and distillation are common in further improving the task performance and efficiency. Structured pruning slims a model for lower computational demands while distillation leverages knowledge of a teacher, usually, larger model to improve model prediction. Combining these methods with quantization can result in optimized model with significant efficiency improvement while enjoying good task accuracy retention. In <code>optimum.openvino</code>, <code>OVTrainer</code> provides the capability to jointly prune, quantize and distill a model during training. Following is an example on how to perform the optimization on BERT-base for the sst-2 task.</p>
+<p>First, we create a config dictionary to specify the target algorithms. As <code>optimum.openvino</code> relies on NNCF as backend, the config format follows NNCF specifications (see <a href="https://github.com/openvinotoolkit/nncf/tree/develop/docs/compression_algorithms" rel="nofollow">here</a>). In the example config below, we specify pruning and quantization in a list of compression with thier hyperparameters. The pruning method closely resembles the work of <a href="https://arxiv.org/pdf/2109.04838.pdf" rel="nofollow">Lagunas et al., 2021, Block Pruning For Faster Transformers</a> whereas the quantization refers to QAT. With this configuration, the model under optimization will be initialized with pruning and quantization operators at the beginning of the training.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START -->compression_config = [
+    {
+        <span class="hljs-string">&quot;compression&quot;</span>:
+        {
+        <span class="hljs-string">&quot;algorithm&quot;</span>:  <span class="hljs-string">&quot;movement_sparsity&quot;</span>,
+        <span class="hljs-string">&quot;params&quot;</span>: {
+            <span class="hljs-string">&quot;warmup_start_epoch&quot;</span>:  <span class="hljs-number">1</span>,
+            <span class="hljs-string">&quot;warmup_end_epoch&quot;</span>:    <span class="hljs-number">4</span>,
+            <span class="hljs-string">&quot;importance_regularization_factor&quot;</span>:  <span class="hljs-number">0.01</span>,
+            <span class="hljs-string">&quot;enable_structured_masking&quot;</span>:  <span class="hljs-literal">True</span>
+        },
+        <span class="hljs-string">&quot;sparse_structure_by_scopes&quot;</span>: [
+            {<span class="hljs-string">&quot;mode&quot;</span>:  <span class="hljs-string">&quot;block&quot;</span>,   <span class="hljs-string">&quot;sparse_factors&quot;</span>: [<span class="hljs-number">32</span>, <span class="hljs-number">32</span>], <span class="hljs-string">&quot;target_scopes&quot;</span>: <span class="hljs-string">&quot;{re}.*BertAttention.*&quot;</span>},
+            {<span class="hljs-string">&quot;mode&quot;</span>:  <span class="hljs-string">&quot;per_dim&quot;</span>, <span class="hljs-string">&quot;axis&quot;</span>:  <span class="hljs-number">0</span>,                 <span class="hljs-string">&quot;target_scopes&quot;</span>: <span class="hljs-string">&quot;{re}.*BertIntermediate.*&quot;</span>},
+            {<span class="hljs-string">&quot;mode&quot;</span>:  <span class="hljs-string">&quot;per_dim&quot;</span>, <span class="hljs-string">&quot;axis&quot;</span>:  <span class="hljs-number">1</span>,                 <span class="hljs-string">&quot;target_scopes&quot;</span>: <span class="hljs-string">&quot;{re}.*BertOutput.*&quot;</span>},
+        ],
+        <span class="hljs-string">&quot;ignored_scopes&quot;</span>: [<span class="hljs-string">&quot;{re}.*NNCFEmbedding&quot;</span>, <span class="hljs-string">&quot;{re}.*pooler.*&quot;</span>, <span class="hljs-string">&quot;{re}.*LayerNorm.*&quot;</span>]
+        }
+    },
+    {
+        <span class="hljs-string">&quot;algorithm&quot;</span>: <span class="hljs-string">&quot;quantization&quot;</span>,
+        <span class="hljs-string">&quot;weights&quot;</span>: {<span class="hljs-string">&quot;mode&quot;</span>: <span class="hljs-string">&quot;symmetric&quot;</span>}
+        <span class="hljs-string">&quot;activations&quot;</span>: { <span class="hljs-string">&quot;mode&quot;</span>: <span class="hljs-string">&quot;symmetric&quot;</span>},
+    }
+]<!-- HTML_TAG_END --></pre></div>
+<blockquote><p>Known limitation: Current structured pruning with movement sparsity only supports <em>BERT, Wav2vec2 and Swin</em> family of models. See <a href="https://github.com/openvinotoolkit/nncf/blob/develop/nncf/experimental/torch/sparsity/movement/MovementSparsity.md" rel="nofollow">here</a> for more information.</p></blockquote>
+<p>Once we have the config ready, we can start develop the training pipeline like the snippet below. Since we are customizing joint compression with config above, notice that <code>OVConfig</code> is initialized with config dictionary (JSON parsing to python dictionary is skipped for brevity). As for distillation, users are required to load the teacher model, it is just like a normal model loading with transformers API. <code>OVTrainingArguments</code> extends transformers’ <code>TrainingArguments</code> with distillation hyperparameters, i.e. distillation weightage and temperature for ease of use. The snippet below shows how we load a teacher model and create training arguments with <code>OVTrainingArguments</code>. Subsequently, the teacher model, with the instantiated <code>OVConfig</code> and <code>OVTrainingArguments</code> are fed to <code>OVTrainer</code>. Voila! that is all we need, the rest of the pipeline is identical to native transformers training.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-deletion">- from transformers import Trainer, TrainingArguments</span>
+<span class="hljs-addition">+ from optimum.intel import OVConfig, OVTrainer, OVTrainingArguments</span>
+
+# Load teacher model
+<span class="hljs-addition">+ teacher_model = AutoModelForSequenceClassification.from_pretrained(teacher_model_or_path)</span>
+
+<span class="hljs-deletion">- ov_config = OVConfig()</span>
+<span class="hljs-addition">+ ov_config = OVConfig(compression=compression_config)</span>
+
+trainer = OVTrainer(
+    model=model,
+<span class="hljs-addition">+   teacher_model=teacher_model,</span>
+<span class="hljs-deletion">-   args=TrainingArguments(save_dir, num_train_epochs=1.0, do_train=True, do_eval=True),</span>
+<span class="hljs-addition">+   args=OVTrainingArguments(save_dir, num_train_epochs=1.0, do_train=True, do_eval=True, distillation_temperature=3, distillation_weight=0.9),</span>
+    train_dataset=dataset[&quot;train&quot;].select(range(300)),
+    eval_dataset=dataset[&quot;validation&quot;],
+    compute_metrics=compute_metrics,
+    tokenizer=tokenizer,
+    data_collator=default_data_collator,
+<span class="hljs-addition">+   ov_config=ov_config,</span>
+    task=&quot;text-classification&quot;,
+)
+
+# Train the model like usual, internally the training is applied with pruning, quantization and distillation
+train_result = trainer.train()
+metrics = trainer.evaluate()
+# Export the quantized model to OpenVINO IR format and save it
+trainer.save_model()<!-- HTML_TAG_END --></pre></div>
+<p>More on the description and how to configure movement sparsity, see NNCF documentation <a href="https://github.com/openvinotoolkit/nncf/blob/develop/nncf/experimental/torch/sparsity/movement/MovementSparsity.md" rel="nofollow">here</a>.</p>
+<p>More on available algorithms in NNCF, see documentation <a href="https://github.com/openvinotoolkit/nncf/tree/develop/docs/compression_algorithms" rel="nofollow">here</a>.</p>
+<p>For complete JPQD scripts, please refer to examples provided <a href="https://github.com/huggingface/optimum-intel/tree/main/examples/openvino" rel="nofollow">here</a>. </p>
+<p>Quantization-Aware Training (QAT) and knowledge distillation can also be combined in order to optimize Stable Diffusion models while maintaining accuracy. For more details, take a look at this <a href="https://huggingface.co/blog/train-optimize-sd-intel" rel="nofollow">blog post</a>.</p>
+<h2 class="relative group"><a id="inference-with-transformers-pipeline" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#inference-with-transformers-pipeline"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Inference with Transformers pipeline
+	</span></h2>
+
+<p>After applying quantization on our model, we can then easily load it with our <code>OVModelFor&lt;Task&gt;</code> classes and perform inference with OpenVINO Runtime using the Transformers <a href="https://huggingface.co/docs/transformers/main/en/main_classes/pipelines" rel="nofollow">pipelines</a>.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline
+<span class="hljs-keyword">from</span> optimum.intel <span class="hljs-keyword">import</span> OVModelForSequenceClassification
+
+model_id = <span class="hljs-string">&quot;helenai/distilbert-base-uncased-finetuned-sst-2-english-ov-int8&quot;</span>
+ov_model = OVModelForSequenceClassification.from_pretrained(model_id)
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+cls_pipe = pipeline(<span class="hljs-string">&quot;text-classification&quot;</span>, model=ov_model, tokenizer=tokenizer)
+text = <span class="hljs-string">&quot;He&#x27;s a dreadful magician.&quot;</span>
+outputs = cls_pipe(text)
+
+[{<span class="hljs-string">&#x27;label&#x27;</span>: <span class="hljs-string">&#x27;NEGATIVE&#x27;</span>, <span class="hljs-string">&#x27;score&#x27;</span>: <span class="hljs-number">0.9840195178985596</span>}]<!-- HTML_TAG_END --></pre></div>
+
+
+		<script type="module" data-hydrate="hk5aep">
+		import { start } from "/docs/optimum.intel/main/en/_app/start-hf-doc-builder.js";
+		start({
+			target: document.querySelector('[data-hydrate="hk5aep"]').parentNode,
+			paths: {"base":"/docs/optimum.intel/main/en","assets":"/docs/optimum.intel/main/en"},
+			session: {},
+			route: false,
+			spa: false,
+			trailing_slash: "never",
+			hydrate: {
+				status: 200,
+				error: null,
+				nodes: [
+					import("/docs/optimum.intel/main/en/_app/pages/__layout.svelte-hf-doc-builder.js"),
+						import("/docs/optimum.intel/main/en/_app/pages/optimization_ov.mdx-hf-doc-builder.js")
+				],
+				params: {}
+			}
+		});
+	</script>

@@ -1,0 +1,325 @@
+<meta charset="utf-8" /><meta http-equiv="content-security-policy" content=""><meta name="hf:doc:metadata" content="{&quot;local&quot;:&quot;optimization&quot;,&quot;sections&quot;:[{&quot;local&quot;:&quot;posttraining-optimization&quot;,&quot;sections&quot;:[{&quot;local&quot;:&quot;dynamic-quantization&quot;,&quot;title&quot;:&quot;Dynamic quantization&quot;},{&quot;local&quot;:&quot;static-quantization&quot;,&quot;title&quot;:&quot;Static quantization&quot;},{&quot;local&quot;:&quot;specify-quantization-recipes&quot;,&quot;title&quot;:&quot;Specify Quantization Recipes&quot;},{&quot;local&quot;:&quot;distributed-acuracyaware-tuning&quot;,&quot;title&quot;:&quot;Distributed Acuracy-aware Tuning&quot;}],&quot;title&quot;:&quot;Post-training optimization&quot;},{&quot;local&quot;:&quot;during-training-optimization&quot;,&quot;sections&quot;:[{&quot;local&quot;:&quot;quantization&quot;,&quot;title&quot;:&quot;Quantization&quot;},{&quot;local&quot;:&quot;pruning&quot;,&quot;title&quot;:&quot;Pruning&quot;},{&quot;local&quot;:&quot;knowledge-distillation&quot;,&quot;title&quot;:&quot;Knowledge distillation&quot;}],&quot;title&quot;:&quot;During training optimization&quot;},{&quot;local&quot;:&quot;loading-a-quantized-model&quot;,&quot;title&quot;:&quot;Loading a quantized model&quot;},{&quot;local&quot;:&quot;inference-with-transformers-pipeline&quot;,&quot;title&quot;:&quot;Inference with Transformers pipeline&quot;}],&quot;title&quot;:&quot;Optimization&quot;}" data-svelte="svelte-1phssyn">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/assets/pages/__layout.svelte-hf-doc-builder.css">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/start-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/vendor-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/paths-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/pages/__layout.svelte-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/pages/optimization_inc.mdx-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/IconCopyLink-hf-doc-builder.js">
+	<link rel="modulepreload" href="/docs/optimum.intel/main/en/_app/chunks/CodeBlock-hf-doc-builder.js"> 
+
+
+
+
+
+
+<h1 class="relative group"><a id="optimization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#optimization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Optimization
+	</span></h1>
+
+<p>Optimum Intel can be used to apply popular compression techniques such as quantization, pruning and knowledge distillation. </p>
+<h2 class="relative group"><a id="posttraining-optimization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#posttraining-optimization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Post-training optimization
+	</span></h2>
+
+<p>Post-training compression techniques such as dynamic and static quantization can be easily applied on your model using our <a href="https://huggingface.co/docs/optimum/intel_optimization#optimum.intel.neural_compressor.IncQuantizer" rel="nofollow"><code>INCQuantizer</code></a>.
+Note that quantization is currently only supported for CPUs (only CPU backends are available), so we will not be utilizing GPUs / CUDA in the following examples.</p>
+<h3 class="relative group"><a id="dynamic-quantization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#dynamic-quantization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Dynamic quantization
+	</span></h3>
+
+<p>You can easily add dynamic quantization on your model by using the following command line:</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START -->optimum-cli inc quantize --model distilbert-base-cased-distilled-squad --output quantized_distilbert<!-- HTML_TAG_END --></pre></div>
+<p>When applying post-training quantization, an accuracy tolerance along with an adapted evaluation function can also be specified in order to find a quantized model meeting the specified constraints. This can be done for both dynamic and static quantization.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-keyword">import</span> evaluate
+<span class="hljs-keyword">from</span> optimum.intel <span class="hljs-keyword">import</span> INCQuantizer
+<span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset
+<span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+<span class="hljs-keyword">from</span> neural_compressor.config <span class="hljs-keyword">import</span> AccuracyCriterion, TuningCriterion, PostTrainingQuantConfig
+
+model_name = <span class="hljs-string">&quot;distilbert-base-cased-distilled-squad&quot;</span>
+model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+eval_dataset = load_dataset(<span class="hljs-string">&quot;squad&quot;</span>, split=<span class="hljs-string">&quot;validation&quot;</span>).select(<span class="hljs-built_in">range</span>(<span class="hljs-number">64</span>))
+task_evaluator = evaluate.evaluator(<span class="hljs-string">&quot;question-answering&quot;</span>)
+qa_pipeline = pipeline(<span class="hljs-string">&quot;question-answering&quot;</span>, model=model, tokenizer=tokenizer)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">eval_fn</span>(<span class="hljs-params">model</span>):
+    qa_pipeline.model = model
+    metrics = task_evaluator.compute(model_or_pipeline=qa_pipeline, data=eval_dataset, metric=<span class="hljs-string">&quot;squad&quot;</span>)
+    <span class="hljs-keyword">return</span> metrics[<span class="hljs-string">&quot;f1&quot;</span>]
+
+<span class="hljs-comment"># Set the accepted accuracy loss to 5%</span>
+accuracy_criterion = AccuracyCriterion(tolerable_loss=<span class="hljs-number">0.05</span>)
+<span class="hljs-comment"># Set the maximum number of trials to 10</span>
+tuning_criterion = TuningCriterion(max_trials=<span class="hljs-number">10</span>)
+quantization_config = PostTrainingQuantConfig(
+    approach=<span class="hljs-string">&quot;dynamic&quot;</span>, accuracy_criterion=accuracy_criterion, tuning_criterion=tuning_criterion
+)
+quantizer = INCQuantizer.from_pretrained(model, eval_fn=eval_fn)
+quantizer.quantize(quantization_config=quantization_config, save_directory=<span class="hljs-string">&quot;dynamic_quantization&quot;</span>)<!-- HTML_TAG_END --></pre></div>
+<h3 class="relative group"><a id="static-quantization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#static-quantization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Static quantization
+	</span></h3>
+
+<p>In the same manner we can apply static quantization, for which we also need to generate the calibration dataset in order to perform the calibration step.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> partial
+<span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForSequenceClassification, AutoTokenizer
+<span class="hljs-keyword">from</span> neural_compressor.config <span class="hljs-keyword">import</span> PostTrainingQuantConfig
+<span class="hljs-keyword">from</span> optimum.intel <span class="hljs-keyword">import</span> INCQuantizer
+
+model_name = <span class="hljs-string">&quot;distilbert-base-uncased-finetuned-sst-2-english&quot;</span>
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+<span class="hljs-comment"># The directory where the quantized model will be saved</span>
+save_dir = <span class="hljs-string">&quot;static_quantization&quot;</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">preprocess_function</span>(<span class="hljs-params">examples, tokenizer</span>):
+    <span class="hljs-keyword">return</span> tokenizer(examples[<span class="hljs-string">&quot;sentence&quot;</span>], padding=<span class="hljs-string">&quot;max_length&quot;</span>, max_length=<span class="hljs-number">128</span>, truncation=<span class="hljs-literal">True</span>)
+
+<span class="hljs-comment"># Load the quantization configuration detailing the quantization we wish to apply</span>
+quantization_config = PostTrainingQuantConfig(approach=<span class="hljs-string">&quot;static&quot;</span>)
+quantizer = INCQuantizer.from_pretrained(model)
+<span class="hljs-comment"># Generate the calibration dataset needed for the calibration step</span>
+calibration_dataset = quantizer.get_calibration_dataset(
+    <span class="hljs-string">&quot;glue&quot;</span>,
+    dataset_config_name=<span class="hljs-string">&quot;sst2&quot;</span>,
+    preprocess_function=partial(preprocess_function, tokenizer=tokenizer),
+    num_samples=<span class="hljs-number">100</span>,
+    dataset_split=<span class="hljs-string">&quot;train&quot;</span>,
+)
+quantizer = INCQuantizer.from_pretrained(model)
+<span class="hljs-comment"># Apply static quantization and save the resulting model</span>
+quantizer.quantize(
+    quantization_config=quantization_config,
+    calibration_dataset=calibration_dataset,
+    save_directory=save_dir,
+)<!-- HTML_TAG_END --></pre></div>
+<h3 class="relative group"><a id="specify-quantization-recipes" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#specify-quantization-recipes"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Specify Quantization Recipes
+	</span></h3>
+
+<p>The <a href="https://arxiv.org/abs/2211.10438" rel="nofollow">SmoothQuant</a> methodology is available for post-training quantization. This methodology usually improves the accuracy of the model in comparison to other post-training static quantization methodologies. This is done by migrating the difficulty from activations to weights with a mathematically equivalent transformation.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-deletion">- quantization_config = PostTrainingQuantConfig(approach=&quot;static&quot;)</span>
+<span class="hljs-addition">+ recipes={&quot;smooth_quant&quot;: True,  &quot;smooth_quant_args&quot;: {&quot;alpha&quot;: 0.5, &quot;folding&quot;: True}}</span>
+<span class="hljs-addition">+ quantization_config = PostTrainingQuantConfig(approach=&quot;static&quot;, backend=&quot;ipex&quot;, recipes=recipes)</span><!-- HTML_TAG_END --></pre></div>
+<p>Please refer to INC <a href="https://github.com/intel/neural-compressor/blob/master/docs/source/smooth_quant.md" rel="nofollow">documentation</a> and the list of <a href="https://github.com/intel/neural-compressor/blob/master/docs/source/smooth_quant.md#validated-models" rel="nofollow">models</a> quantized with the methodology for more details. </p>
+<h3 class="relative group"><a id="distributed-acuracyaware-tuning" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#distributed-acuracyaware-tuning"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Distributed Acuracy-aware Tuning
+	</span></h3>
+
+One challenge in model quantization is identifying the optimal configuration that balances accuracy and performance. Distributed tuning speeds up this time-consuming process by parallelizing it across multiple nodes, which accelerates the tuning process in linear scaling.
+<p>To utilize distributed tuning, please set the <code>quant_level</code> to <code>1</code> and run it with <code>mpirun</code>.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-deletion">- quantization_config = PostTrainingQuantConfig(approach=&quot;static&quot;)</span>
+<span class="hljs-addition">+ quantization_config = PostTrainingQuantConfig(approach=&quot;static&quot;, quant_level=1)</span><!-- HTML_TAG_END --></pre></div>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START -->mpirun -np &lt;number_of_processes&gt; &lt;RUN_CMD&gt;<!-- HTML_TAG_END --></pre></div>
+<p>Please refer to INC <a href="https://github.com/intel/neural-compressor/blob/master/docs/source/tuning_strategies.md#distributed-tuning" rel="nofollow">documentation</a> and <a href="https://github.com/huggingface/optimum-intel/tree/main/examples/neural_compressor/text-classification" rel="nofollow">text-classification</a> example for more details. </p>
+<h2 class="relative group"><a id="during-training-optimization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#during-training-optimization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>During training optimization
+	</span></h2>
+
+<p>The <a href="https://huggingface.co/docs/optimum/main/intel/reference_inc#optimum.intel.INCTrainer" rel="nofollow"><code>INCTrainer</code></a> class provides an API to train your model while combining different compression techniques such as knowledge distillation, pruning and quantization.
+The <code>INCTrainer</code> is very similar to the 🤗 Transformers <a href="https://huggingface.co/docs/transformers/main/en/main_classes/trainer#trainer" rel="nofollow"><code>Trainer</code></a>, which can be replaced with minimal changes in your code.</p>
+<h3 class="relative group"><a id="quantization" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#quantization"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Quantization
+	</span></h3>
+
+<p>To apply quantization during training, you only need to create the appropriate configuration and pass it to the <code>INCTrainer</code>.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START -->import evaluate
+import numpy as np
+from datasets import load_dataset
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, TrainingArguments, default_data_collator
+<span class="hljs-deletion">- from transformers import Trainer</span>
+<span class="hljs-addition">+ from optimum.intel import INCModelForSequenceClassification, INCTrainer</span>
+<span class="hljs-addition">+ from neural_compressor import QuantizationAwareTrainingConfig</span>
+
+model_id = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+model = AutoModelForSequenceClassification.from_pretrained(model_id)
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+dataset = load_dataset(&quot;glue&quot;, &quot;sst2&quot;)
+dataset = dataset.map(lambda examples: tokenizer(examples[&quot;sentence&quot;], padding=True, max_length=128), batched=True)
+metric = evaluate.load(&quot;glue&quot;, &quot;sst2&quot;)
+compute_metrics = lambda p: metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
+
+# The directory where the quantized model will be saved
+save_dir = &quot;quantized_model&quot;
+
+# The configuration detailing the quantization process
+<span class="hljs-addition">+quantization_config = QuantizationAwareTrainingConfig()</span>
+
+<span class="hljs-deletion">- trainer = Trainer(</span>
+<span class="hljs-addition">+ trainer = INCTrainer(</span>
+    model=model,
+<span class="hljs-addition">+   quantization_config=quantization_config,</span>
+    args=TrainingArguments(save_dir, num_train_epochs=1.0, do_train=True, do_eval=False),
+    train_dataset=dataset[&quot;train&quot;].select(range(300)),
+    eval_dataset=dataset[&quot;validation&quot;],
+    compute_metrics=compute_metrics,
+    tokenizer=tokenizer,
+    data_collator=default_data_collator,
+)
+
+train_result = trainer.train()
+metrics = trainer.evaluate()
+trainer.save_model()
+
+<span class="hljs-deletion">- model = AutoModelForSequenceClassification.from_pretrained(save_dir)</span>
+<span class="hljs-addition">+ model = INCModelForSequenceClassification.from_pretrained(save_dir)</span><!-- HTML_TAG_END --></pre></div>
+<h3 class="relative group"><a id="pruning" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#pruning"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Pruning
+	</span></h3>
+
+<p>In the same manner, pruning can be applied by specifying the pruning configuration detailing the desired pruning process.
+To know more about the different supported methodologies, you can refer to the Neural Compressor <a href="https://github.com/intel/neural-compressor/tree/master/neural_compressor/compression/pruner#pruning-types" rel="nofollow">documentation</a>.
+At the moment, pruning is applied on both the linear and the convolutional layers, and not on other layers such as the embeddings. It’s important to mention that the pruning sparsity defined in the configuration will be applied on these layers, and thus will not results in the global model sparsity.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-deletion">- from transformers import Trainer</span>
+<span class="hljs-addition">+ from optimum.intel import INCTrainer</span>
+<span class="hljs-addition">+ from neural_compressor import WeightPruningConfig</span>
+
+# The configuration detailing the pruning process
+<span class="hljs-addition">+ pruning_config = WeightPruningConfig(</span>
+<span class="hljs-addition">+    pruning_type=&quot;magnitude&quot;,</span>
+<span class="hljs-addition">+    start_step=0,</span>
+<span class="hljs-addition">+    end_step=15,</span>
+<span class="hljs-addition">+    target_sparsity=0.2,</span>
+<span class="hljs-addition">+    pruning_scope=&quot;local&quot;,</span>
+<span class="hljs-addition">+ )</span>
+
+<span class="hljs-deletion">- trainer = Trainer(</span>
+<span class="hljs-addition">+ trainer = INCTrainer(</span>
+    model=model,
+<span class="hljs-addition">+   pruning_config=pruning_config,</span>
+    args=TrainingArguments(save_dir, num_train_epochs=1.0, do_train=True, do_eval=False),
+    train_dataset=dataset[&quot;train&quot;].select(range(300)),
+    eval_dataset=dataset[&quot;validation&quot;],
+    compute_metrics=compute_metrics,
+    tokenizer=tokenizer,
+    data_collator=default_data_collator,
+)
+
+train_result = trainer.train()
+metrics = trainer.evaluate()
+trainer.save_model()
+
+model = AutoModelForSequenceClassification.from_pretrained(save_dir)<!-- HTML_TAG_END --></pre></div>
+<h3 class="relative group"><a id="knowledge-distillation" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#knowledge-distillation"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Knowledge distillation
+	</span></h3>
+
+<p>Knowledge distillation can also be applied in the same manner.
+To know more about the different supported methodologies, you can refer to the Neural Compressor <a href="https://github.com/intel/neural-compressor/blob/master/docs/source/distillation.md" rel="nofollow">documentation</a></p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-deletion">- from transformers import Trainer</span>
+<span class="hljs-addition">+ from optimum.intel import INCTrainer</span>
+<span class="hljs-addition">+ from neural_compressor import DistillationConfig</span>
+
+<span class="hljs-addition">+ teacher_model_id = &quot;textattack/bert-base-uncased-SST-2&quot;</span>
+<span class="hljs-addition">+ teacher_model = AutoModelForSequenceClassification.from_pretrained(teacher_model_id)</span>
+<span class="hljs-addition">+ distillation_config = DistillationConfig(teacher_model=teacher_model)</span>
+
+<span class="hljs-deletion">- trainer = Trainer(</span>
+<span class="hljs-addition">+ trainer = INCTrainer(</span>
+    model=model,
+<span class="hljs-addition">+   distillation_config=distillation_config,</span>
+    args=TrainingArguments(save_dir, num_train_epochs=1.0, do_train=True, do_eval=False),
+    train_dataset=dataset[&quot;train&quot;].select(range(300)),
+    eval_dataset=dataset[&quot;validation&quot;],
+    compute_metrics=compute_metrics,
+    tokenizer=tokenizer,
+    data_collator=default_data_collator,
+)
+
+train_result = trainer.train()
+metrics = trainer.evaluate()
+trainer.save_model()
+
+model = AutoModelForSequenceClassification.from_pretrained(save_dir)<!-- HTML_TAG_END --></pre></div>
+<h2 class="relative group"><a id="loading-a-quantized-model" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#loading-a-quantized-model"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Loading a quantized model
+	</span></h2>
+
+<p>To load a quantized model hosted locally or on the 🤗 hub, you must instantiate you model using our <a href="https://huggingface.co/docs/optimum/main/intel/reference_inc#optimum.intel.neural_compressor.quantization.INCModel" rel="nofollow"><code>INCModelForXxx</code></a> classes.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-keyword">from</span> optimum.intel <span class="hljs-keyword">import</span> INCModelForSequenceClassification
+
+model_name = <span class="hljs-string">&quot;Intel/distilbert-base-uncased-finetuned-sst-2-english-int8-dynamic&quot;</span>
+model = INCModelForSequenceClassification.from_pretrained(model_name)<!-- HTML_TAG_END --></pre></div>
+<p>You can load many more quantized models hosted on the hub under the Intel organization <a href="https://huggingface.co/Intel" rel="nofollow"><code>here</code></a>.</p>
+<h2 class="relative group"><a id="inference-with-transformers-pipeline" class="header-link block pr-1.5 text-lg no-hover:hidden with-hover:absolute with-hover:p-1.5 with-hover:opacity-0 with-hover:group-hover:opacity-100 with-hover:right-full" href="#inference-with-transformers-pipeline"><span><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M167.594 88.393a8.001 8.001 0 0 1 0 11.314l-67.882 67.882a8 8 0 1 1-11.314-11.315l67.882-67.881a8.003 8.003 0 0 1 11.314 0zm-28.287 84.86l-28.284 28.284a40 40 0 0 1-56.567-56.567l28.284-28.284a8 8 0 0 0-11.315-11.315l-28.284 28.284a56 56 0 0 0 79.196 79.197l28.285-28.285a8 8 0 1 0-11.315-11.314zM212.852 43.14a56.002 56.002 0 0 0-79.196 0l-28.284 28.284a8 8 0 1 0 11.314 11.314l28.284-28.284a40 40 0 0 1 56.568 56.567l-28.285 28.285a8 8 0 0 0 11.315 11.314l28.284-28.284a56.065 56.065 0 0 0 0-79.196z" fill="currentColor"></path></svg></span></a>
+	<span>Inference with Transformers pipeline
+	</span></h2>
+
+<p>The quantized model can then easily be used to run inference with the Transformers <a href="https://huggingface.co/docs/transformers/main/en/main_classes/pipelines" rel="nofollow">pipelines</a>.</p>
+
+	<div class="code-block relative"><div class="absolute top-2.5 right-4"><button class="inline-flex items-center relative text-sm focus:text-green-500 cursor-pointer focus:outline-none transition duration-200 ease-in-out opacity-0 mx-0.5   text-gray-600 " title="code excerpt" type="button"><svg class="" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M28,10V28H10V10H28m0-2H10a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V10a2,2,0,0,0-2-2Z" transform="translate(0)"></path><path d="M4,18H2V4A2,2,0,0,1,4,2H18V4H4Z" transform="translate(0)"></path><rect fill="none" width="32" height="32"></rect></svg>
+	<div class="absolute pointer-events-none transition-opacity bg-black text-white py-1 px-2 leading-tight rounded font-normal shadow left-1/2 top-full transform -translate-x-1/2 translate-y-2 opacity-0"><div class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-black border-4 border-t-0" style="border-left-color: transparent; border-right-color: transparent; "></div>
+	Copied</div></button></div>
+	<pre><!-- HTML_TAG_START --><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, pipeline
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+pipe_cls = pipeline(<span class="hljs-string">&quot;text-classification&quot;</span>, model=model, tokenizer=tokenizer)
+text = <span class="hljs-string">&quot;He&#x27;s a dreadful magician.&quot;</span>
+outputs = pipe_cls(text)
+
+[{<span class="hljs-string">&#x27;label&#x27;</span>: <span class="hljs-string">&#x27;NEGATIVE&#x27;</span>, <span class="hljs-string">&#x27;score&#x27;</span>: <span class="hljs-number">0.9880216121673584</span>}]<!-- HTML_TAG_END --></pre></div>
+<p>Check out the <a href="https://github.com/huggingface/optimum-intel/tree/main/examples" rel="nofollow"><code>examples</code></a> directory for more sophisticated usage.</p>
+
+
+		<script type="module" data-hydrate="187cf9j">
+		import { start } from "/docs/optimum.intel/main/en/_app/start-hf-doc-builder.js";
+		start({
+			target: document.querySelector('[data-hydrate="187cf9j"]').parentNode,
+			paths: {"base":"/docs/optimum.intel/main/en","assets":"/docs/optimum.intel/main/en"},
+			session: {},
+			route: false,
+			spa: false,
+			trailing_slash: "never",
+			hydrate: {
+				status: 200,
+				error: null,
+				nodes: [
+					import("/docs/optimum.intel/main/en/_app/pages/__layout.svelte-hf-doc-builder.js"),
+						import("/docs/optimum.intel/main/en/_app/pages/optimization_inc.mdx-hf-doc-builder.js")
+				],
+				params: {}
+			}
+		});
+	</script>
