@@ -50,6 +50,7 @@ from optimum.utils import (
     DIFFUSION_MODEL_VAE_ENCODER_SUBFOLDER,
 )
 
+from .loaders import OVTextualInversionLoaderMixin
 from .modeling_base import OVBaseModel
 from .utils import ONNX_WEIGHTS_NAME, OV_TO_NP_TYPE, OV_XML_FILE_NAME
 
@@ -59,7 +60,7 @@ core = Core()
 logger = logging.getLogger(__name__)
 
 
-class OVStableDiffusionPipelineBase(OVBaseModel):
+class OVStableDiffusionPipelineBase(OVBaseModel, OVTextualInversionLoaderMixin):
     auto_model_class = StableDiffusionPipeline
     config_name = "model_index.json"
     export_feature = "stable-diffusion"
@@ -217,6 +218,9 @@ class OVStableDiffusionPipelineBase(OVBaseModel):
                     cls.config_name,
                 }
             )
+            ignore_patterns = ["*.msgpack", "*.safetensors", "*pytorch_model.bin"]
+            if not from_onnx:
+                ignore_patterns.extend(["*.onnx", "*.onnx_data"])
             # Downloads all repo's files matching the allowed patterns
             model_id = snapshot_download(
                 model_id,
@@ -225,7 +229,7 @@ class OVStableDiffusionPipelineBase(OVBaseModel):
                 use_auth_token=use_auth_token,
                 revision=revision,
                 allow_patterns=allow_patterns,
-                ignore_patterns=["*.msgpack", "*.safetensors", "*pytorch_model.bin"],
+                ignore_patterns=ignore_patterns,
             )
         new_model_save_dir = Path(model_id)
 
